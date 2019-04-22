@@ -3,18 +3,20 @@
 namespace Doctrine\Tests\DBAL\Types;
 
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\JsonType;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\Tests\DBAL\Mocks\MockPlatform;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Tests\DbalTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use function base64_encode;
 use function fopen;
 use function json_encode;
 
 class JsonTest extends DbalTestCase
 {
-    /** @var MockPlatform */
+    /** @var AbstractPlatform|MockObject */
     protected $platform;
 
     /** @var JsonType */
@@ -25,7 +27,7 @@ class JsonTest extends DbalTestCase
      */
     protected function setUp() : void
     {
-        $this->platform = new MockPlatform();
+        $this->platform = $this->createMock(AbstractPlatform::class);
         $this->type     = Type::getType('json');
     }
 
@@ -36,12 +38,16 @@ class JsonTest extends DbalTestCase
 
     public function testReturnsName()
     {
-        self::assertSame(Type::JSON, $this->type->getName());
+        self::assertSame(Types::JSON, $this->type->getName());
     }
 
     public function testReturnsSQLDeclaration()
     {
-        self::assertSame('DUMMYJSON', $this->type->getSQLDeclaration([], $this->platform));
+        $this->platform->expects($this->once())
+            ->method('getJsonTypeDeclarationSQL')
+            ->willReturn('TEST_JSON');
+
+        self::assertSame('TEST_JSON', $this->type->getSQLDeclaration([], $this->platform));
     }
 
     public function testJsonNullConvertsToPHPValue()

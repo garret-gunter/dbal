@@ -46,7 +46,7 @@ use function strlen;
 use function strtolower;
 use function substr;
 
-class SchemaManagerFunctionalTestCase extends DbalFunctionalTestCase
+abstract class SchemaManagerFunctionalTestCase extends DbalFunctionalTestCase
 {
     /** @var AbstractSchemaManager */
     protected $schemaManager;
@@ -56,6 +56,7 @@ class SchemaManagerFunctionalTestCase extends DbalFunctionalTestCase
         $class     = static::class;
         $e         = explode('\\', $class);
         $testClass = end($e);
+
         return strtolower(str_replace('SchemaManagerTest', null, $testClass));
     }
 
@@ -72,7 +73,6 @@ class SchemaManagerFunctionalTestCase extends DbalFunctionalTestCase
         $this->schemaManager = $this->connection->getSchemaManager();
     }
 
-
     protected function tearDown() : void
     {
         parent::tearDown();
@@ -87,7 +87,6 @@ class SchemaManagerFunctionalTestCase extends DbalFunctionalTestCase
             return;
         }
     }
-
 
     /**
      * @group DBAL-1220
@@ -632,7 +631,6 @@ class SchemaManagerFunctionalTestCase extends DbalFunctionalTestCase
         self::assertEquals(['id'], array_map('strtolower', $foreignKey->getForeignColumns()));
     }
 
-
     public function testTableInNamespace()
     {
         if (! $this->schemaManager->getDatabasePlatform()->supportsSchemas()) {
@@ -982,6 +980,7 @@ class SchemaManagerFunctionalTestCase extends DbalFunctionalTestCase
         $table->setPrimaryKey(['id']);
         $table->addColumn('test', 'string', ['length' => 255]);
         $table->addColumn('foreign_key_test', 'integer');
+
         return $table;
     }
 
@@ -993,6 +992,7 @@ class SchemaManagerFunctionalTestCase extends DbalFunctionalTestCase
         $table->addColumn('other_id', 'integer', ['notnull' => true]);
         $table->setPrimaryKey(['id', 'other_id']);
         $table->addColumn('test', 'string', ['length' => 255]);
+
         return $table;
     }
 

@@ -12,6 +12,7 @@ use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\Types\BlobType;
 use Doctrine\DBAL\Types\DecimalType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use function array_map;
 use function array_pop;
 use function count;
@@ -390,6 +391,7 @@ class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
     {
         if (! $this->schemaManager->getDatabasePlatform() instanceof PostgreSQL94Platform) {
             $this->markTestSkipped('Requires PostgresSQL 9.4+');
+
             return;
         }
 
@@ -409,8 +411,8 @@ class PostgreSqlSchemaManagerTest extends SchemaManagerFunctionalTestCase
     public function jsonbColumnTypeProvider() : array
     {
         return [
-            [Type::JSON],
-            [Type::JSON_ARRAY],
+            [Types::JSON],
+            [Types::JSON_ARRAY],
         ];
     }
 

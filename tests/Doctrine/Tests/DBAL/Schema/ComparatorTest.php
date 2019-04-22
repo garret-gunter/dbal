@@ -826,7 +826,6 @@ class ComparatorTest extends TestCase
         self::assertArrayHasKey('id', $tableDiff->changedColumns);
     }
 
-
     /**
      * @group DBAL-105
      */
@@ -853,7 +852,6 @@ class ComparatorTest extends TestCase
         self::assertEquals(['logged_in_at'], array_keys($tableDiff->addedColumns));
         self::assertCount(0, $tableDiff->removedColumns);
     }
-
 
     /**
      * @group DBAL-112
@@ -994,7 +992,6 @@ class ComparatorTest extends TestCase
         self::assertCount(0, $diff->removedSequences);
     }
 
-
     /**
      * Check that added autoincrement sequence is not populated in newSequences
      *
@@ -1018,6 +1015,7 @@ class ComparatorTest extends TestCase
 
         self::assertCount(0, $diff->newSequences);
     }
+
     /**
      * You can get multiple drops for a FK when a table referenced by a foreign
      * key is deleted, as this FK is referenced twice, once on the orphanedForeignKeys
