@@ -2140,6 +2140,8 @@ abstract class AbstractPlatform
     /**
      * Common code for alter table statement generation that updates the changed Index and Foreign Key definitions.
      *
+     * @deprecated
+     *
      * @return string[]
      */
     protected function _getAlterTableIndexForeignKeySQL(TableDiff $diff)
@@ -2311,7 +2313,7 @@ abstract class AbstractPlatform
             return " DEFAULT '" . $this->convertBooleans($default) . "'";
         }
 
-        return " DEFAULT '" . $default . "'";
+        return ' DEFAULT ' . $this->quoteStringLiteral($default);
     }
 
     /**
