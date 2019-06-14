@@ -207,7 +207,7 @@ class ComparatorTest extends TestCase
         self::assertEquals([], $c->diffColumn($column1, $column2));
     }
 
-    public function testCompareColumnsOverridenType() : void
+    public function testCompareColumnsOverriddenType() : void
     {
         $oldStringInstance = Type::getType('string');
         $integerType       = Type::getType('integer');
