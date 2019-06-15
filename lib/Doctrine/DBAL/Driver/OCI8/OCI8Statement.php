@@ -58,7 +58,11 @@ class OCI8Statement implements IteratorAggregate, Statement
     /** @var OCI8Connection */
     protected $_conn;
 
-    /** @var string */
+    /**
+     * @deprecated
+     *
+     * @var string
+     */
     protected static $_PARAM = ':param';
 
     /** @var int[] */
@@ -254,6 +258,7 @@ class OCI8Statement implements IteratorAggregate, Statement
     {
         if (preg_match($regex, $statement, $matches, PREG_OFFSET_CAPTURE, $offset)) {
             $offset = $matches[0][1];
+
             return $matches[0][0];
         }
 

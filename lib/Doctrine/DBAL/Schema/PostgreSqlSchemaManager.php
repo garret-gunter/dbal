@@ -6,6 +6,7 @@ use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use const CASE_LOWER;
 use function array_change_key_case;
 use function array_filter;
@@ -20,7 +21,6 @@ use function preg_match;
 use function preg_replace;
 use function sprintf;
 use function str_replace;
-use function stripos;
 use function strlen;
 use function strpos;
 use function strtolower;
@@ -329,11 +329,9 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             $autoincrement           = true;
         }
 
-        if (preg_match("/^['(](.*)[')]::.*$/", $tableColumn['default'], $matches)) {
+        if (preg_match("/^['(](.*)[')]::/", $tableColumn['default'], $matches)) {
             $tableColumn['default'] = $matches[1];
-        }
-
-        if (stripos($tableColumn['default'], 'NULL') === 0) {
+        } elseif (preg_match('/^NULL::/', $tableColumn['default'])) {
             $tableColumn['default'] = null;
         }
 
@@ -394,11 +392,12 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
                 $length = null;
                 break;
             case 'text':
-                $fixed = false;
-                break;
-            case 'varchar':
-            case 'interval':
             case '_varchar':
+            case 'varchar':
+                $tableColumn['default'] = $this->parseDefaultExpression($tableColumn['default']);
+                $fixed                  = false;
+                break;
+            case 'interval':
                 $fixed = false;
                 break;
             case 'char':
@@ -456,7 +455,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             $column->setPlatformOption('collation', $tableColumn['collation']);
         }
 
-        if (in_array($column->getType()->getName(), [Type::JSON_ARRAY, Type::JSON], true)) {
+        if (in_array($column->getType()->getName(), [Types::JSON_ARRAY, Types::JSON], true)) {
             $column->setPlatformOption('jsonb', $jsonb);
         }
 
@@ -477,5 +476,17 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         }
 
         return $defaultValue;
+    }
+
+    /**
+     * Parses a default value expression as given by PostgreSQL
+     */
+    private function parseDefaultExpression(?string $default) : ?string
+    {
+        if ($default === null) {
+            return $default;
+        }
+
+        return str_replace("''", "'", $default);
     }
 }

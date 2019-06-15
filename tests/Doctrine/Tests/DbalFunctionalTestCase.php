@@ -18,7 +18,7 @@ use function is_scalar;
 use function strpos;
 use function var_export;
 
-class DbalFunctionalTestCase extends DbalTestCase
+abstract class DbalFunctionalTestCase extends DbalTestCase
 {
     /**
      * Shared connection when a TestCase is run alone (outside of it's functional suite)
@@ -33,7 +33,7 @@ class DbalFunctionalTestCase extends DbalTestCase
     /** @var DebugStack */
     protected $sqlLoggerStack;
 
-    protected function resetSharedConn()
+    protected function resetSharedConn() : void
     {
         if (! self::$sharedConnection) {
             return;
@@ -74,7 +74,9 @@ class DbalFunctionalTestCase extends DbalTestCase
                 $params   = array_map(static function ($p) {
                     if (is_object($p)) {
                         return get_class($p);
-                    } elseif (is_scalar($p)) {
+                    }
+
+                    if (is_scalar($p)) {
                         return "'" . $p . "'";
                     }
 
